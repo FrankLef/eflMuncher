@@ -1,10 +1,11 @@
 Package: eflMunchr
-Title: What the Package Does (One Line, Title Case)
-Version: 0.0.0.9000
+Title: Data Pre-processing Tools Used by FL
+Version: 0.1.0
 Authors@R: 
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"),
+    person("François", "Lefebvre", , "flefebvre01@hotmail.com", role = c("aut", "cre"),
            comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
+Description: Set of tools for data prerpocessing used by FL. In parocular it 
+    uses several pruning functions to clean and flag the pruned data lines.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
