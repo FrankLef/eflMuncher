@@ -7,10 +7,10 @@
 prune_upd(df, cond, prune_var = "prune_id", id)
 }
 \arguments{
-\item{df}{dataframe}
+\item{df}{dataframe.}
 
 \item{cond}{logical vector where TRUE = update the id when it is not already
-set, that is if its value ids not \code{id_na}}
+set, that is if its value ids not \code{id}.}
 
 \item{prune_var}{String, name of the column with the prune id}
 
@@ -18,7 +18,7 @@ set, that is if its value ids not \code{id_na}}
 It must be different than  \code{NA_character_}.}
 }
 \value{
-dataframe with update column \code{prune_var}
+dataframe with update column \code{prune_var}.
 }
 \description{
 Update the prune id

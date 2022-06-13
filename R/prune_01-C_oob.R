@@ -1,6 +1,6 @@
-#' Flag the data lines with values outside some range
+#' Prune Rows with Values Outside a Given Range
 #'
-#' Flag the data lines with values outside some range.
+#' Prune rows with values outside a given range.
 #'
 #' Flag the data lines with numeric values outside of the allowed
 #' range set by the user. The "flag" column \code{prune_var} will be
@@ -22,11 +22,11 @@
 #' @examples
 #' rng <- c(4, 7)
 #' df <- data.frame(iris, prune_id = factor(NA_character_))
-#' df <- prune_range(df, var = "Sepal.Length", rng = rng)
+#' df <- prune_oob(df, var = "Sepal.Length", rng = rng)
 #' # This should give 12 pruned points with prune id == "range"
 #' check <- sum(iris$Sepal.Length < rng[1] | iris$Sepal.Length > rng[2])
 #' stopifnot(sum(!is.na(df$prune_id)) == check)
-prune_range <- function(df, var, prune_var = "prune_id", id = "range",
+prune_oob <- function(df, var, prune_var = "prune_id", id = "oob",
                         rng = c(-Inf, Inf)) {
   checkmate::assertNames(names(df), must.include = c(var, prune_var))
   checkmate::assertString(id, min.chars = 1)

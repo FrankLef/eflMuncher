@@ -1,6 +1,6 @@
-#' Prune \code{NA}, \code{NaN} and \code{Inf}
+#' Prune Rows That are Not Finite
 #'
-#' Prune \code{NA}, \code{NaN} and \code{Inf},
+#' Prune rows that are not finite.
 #'
 #' Prune \code{NA}, \code{NaN} and \code{Inf}. You can select which one by
 #' using the flags \code{is_na} and \code{is_fin}, \code{is_na} will prune
@@ -18,7 +18,7 @@
 #' @param is_na TRUE: flag \code{NA} and \code{NaN}. default is \code{TRUE}
 #' @param is_inf TRUE: flag \code{Inf} and \code{-Inf}. default is \code{TRUE}
 #'
-#' @return dataframe with updated \code{prune_var}  column
+#' @return dataframe with updated \code{prune_var}  column.
 #' @export
 #'
 #' @importFrom rlang .data :=

@@ -2,26 +2,28 @@
 % Please edit documentation in R/prune_01-A_upd_reset.R
 \name{prune_reset}
 \alias{prune_reset}
-\title{Reset the prune id column}
+\title{Reset the Prune ID Column}
 \usage{
 prune_reset(df, prune_var = "prune_id", id = NA_character_)
 }
 \arguments{
-\item{df}{dataframe}
+\item{df}{dataframe.}
 
-\item{prune_var}{String, name of the column with the prune id}
+\item{prune_var}{String, name of the column with the prune id.}
 
-\item{id}{String, if not NA then only that id will be reset to \code{NA}}
+\item{id}{String. If \code{NA} (default) the whole column will be reset to
+\code{NA}. if not \code{NA} then only the element with \code{id} will
+be reset to \code{NA}.}
 }
 \value{
-dataframe with reset \code{prune_var}
+dataframe with reset \code{prune_var}.
 }
 \description{
 Reset the prune id column.
 }
 \details{
-If it doesn't already exists it will create the prune id column. The id
-will be reset to \code{NA_character_} in all cases.
+If it doesn't already exists it will create the prune id column and set
+to \code{NA}.
 }
 \examples{
 df <- data.frame(alpha = letters[1:3])

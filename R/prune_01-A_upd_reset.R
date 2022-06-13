@@ -1,15 +1,17 @@
-#' Reset the prune id column
+#' Reset the Prune ID Column
 #'
 #' Reset the prune id column.
 #'
-#' If it doesn't already exists it will create the prune id column. The id
-#' will be reset to \code{NA_character_} in all cases.
+#' If it doesn't already exists it will create the prune id column and set
+#' to \code{NA}.
 #'
-#' @param df dataframe
-#' @param prune_var String, name of the column with the prune id
-#' @param id String, if not NA then only that id will be reset to \code{NA}
+#' @param df dataframe.
+#' @param prune_var String, name of the column with the prune id.
+#' @param id String. If \code{NA} (default) the whole column will be reset to
+#' \code{NA}. if not \code{NA} then only the element with \code{id} will
+#' be reset to \code{NA}.
 #'
-#' @return dataframe with reset \code{prune_var}
+#' @return dataframe with reset \code{prune_var}.
 #' @export
 #'
 #' @examples
@@ -45,14 +47,14 @@ prune_reset <- function(df, prune_var = "prune_id", id = NA_character_) {
 #'
 #' Set the prune id based on a logical vector to \code{id}
 #'
-#' @param df dataframe
+#' @param df dataframe.
 #' @param cond logical vector where TRUE = update the id when it is not already
-#'  set, that is if its value ids not \code{id_na}
+#'  set, that is if its value ids not \code{id}.
 #' @param prune_var String, name of the column with the prune id
 #' @param id String, identification of the pruning in \code{prune_var}.
-#'   It must be different than  \code{NA_character_}.
+#' It must be different than  \code{NA_character_}.
 #'
-#' @return dataframe with update column \code{prune_var}
+#' @return dataframe with update column \code{prune_var}.
 #' @export
 #'
 #' @examples
@@ -134,9 +136,9 @@ prune_upd <- function(df, cond, prune_var = "prune_id", id) {
 #'  prune_id = factor(c(NA_character_, "out", NA_character_)),
 #'  is_pruned = c(FALSE, TRUE, FALSE))
 #' stopifnot(identical(df, target))
-prune_flag <- function(df, prune_var = "prune_id", flag_var = "is_pruned") {
-  checkmate::assertDataFrame(df, min.cols = 2, min.rows = 1)
-  checkmate::assertNames(names(df), must.include = prune_var)
-
-  df %>% mutate(!!flag_var := !is.na(.data[[prune_var]]))
-}
+# prune_flag <- function(df, prune_var = "prune_id", flag_var = "is_pruned") {
+#   checkmate::assertDataFrame(df, min.cols = 2, min.rows = 1)
+#   checkmate::assertNames(names(df), must.include = prune_var)
+#
+#   df %>% mutate(!!flag_var := !is.na(.data[[prune_var]]))
+# }

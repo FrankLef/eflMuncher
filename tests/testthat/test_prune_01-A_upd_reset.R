@@ -16,7 +16,7 @@ df <- df %>%
 # cat("\n", crayon::bold$yellow("df"), "\n")
 # print(df)
 
-test_that("prune_reset: tibble",
+test_that("prune_reset: tibble, create new column.",
           {
             target <- tibble::tibble(
               alpha = letters[1:3],
@@ -36,7 +36,7 @@ test_that("prune_reset: tibble",
             expect_identical(test, target)
           })
 
-test_that("prune_reset",
+test_that("prune_reset: Create new column.",
           code = {
 
             # the target dataframe
@@ -63,7 +63,7 @@ test_that("prune_reset",
 
           })
 
-test_that("prune_reset specific",
+test_that("prune_reset: specific",
           code = {
 
             eg <- data.frame(
@@ -132,43 +132,6 @@ test_that("prune_reset then prune_upd",
             expect_identical(test, target)
           })
 
-test_that("prune_flag",
-          code = {
-
-            # target <- data.frame(df, is_pruned = df$prune_id != id_na)
-            target <- df %>%
-              mutate(is_pruned = !is.na(prune_id))
-            # cat("\n", crayon::bold$yellow("target"), "\n")
-            # str(target)
-
-            eg <- data.frame(df, is_pruned = FALSE)
-            test <- prune_flag(eg)
-            # cat("\n", crayon::bold$yellow("test"), "\n")
-            # str(test)
-
-            expect_identical(test, target)
-
-          })
-
-# test_that("prune_upd ERROR: Invalid id",
-#           code = {
-#
-#             target <- df
-#             target$prune_id <- factor(c(NA_character_, id_not, id_not,
-#                                         NA_character_, id_not,
-#                                         id_not, id_new, id_new, id_new))
-#             # target$prune_id <- factor(c(id_na, id_not, id_not, id_na, id_not,
-#             #                             id_not, id_new, id_new, id_new))
-#             # cat("\n", crayon::bold$yellow("target"), "\n")
-#             # str(target)
-#
-#             cond <- df$num < 0L
-#
-#             # ERROR: id must be different than id_na
-#             expect_error(prune_upd(df, cond, id = id_na),
-#                          class = "prune_range_error1")
-#
-#           })
 
 test_that("prune_upd ERROR: no row with default id",
           code = {

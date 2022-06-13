@@ -18,7 +18,7 @@ test_that("prune_range ERROR: invalid range min > max",
               prune_id = factor(NA_character_)
             )
 
-            expect_error(prune_range(df = eg, var = "beta", rng = rng),
+            expect_error(prune_oob(df = eg, var = "beta", rng = rng),
                          regexp = ".+Must be sorted.+")
           })
 
@@ -34,7 +34,7 @@ test_that("prune_range ERROR: range not wide enough",
             # ERROR: The prune range is invalid
             rng <- c(1, 1 + .Machine$double.eps^0.51)
 
-            expect_error(prune_range(df = eg, var = "beta", rng = rng),
+            expect_error(prune_oob(df = eg, var = "beta", rng = rng),
                          class = "prune_range_error1")
           })
 
@@ -49,7 +49,7 @@ test_that("prune_range ERROR: Non-finite values",
               prune_id = factor(NA_character_)
             )
 
-            expect_error(prune_range(df = eg, var = "beta", rng = rng),
+            expect_error(prune_oob(df = eg, var = "beta", rng = rng),
                          class = "prune_range_error2")
 
           })
@@ -65,7 +65,7 @@ test_that("prune_fence: all rows already pruned",
               prune_id = factor(id_old)
             )
 
-            expect_error(prune_range(df = eg, var = "beta", rng = rng),
+            expect_error(prune_oob(df = eg, var = "beta", rng = rng),
                          class = "prune_range_error3")
           })
 
@@ -90,7 +90,7 @@ test_that("prune_range",
             # cat("\n", crayon::bold$yellow("target"), "\n")
             # print(target)
 
-            test <- prune_range(df = eg, var = "beta", rng = rng, id = id_new)
+            test <- prune_oob(df = eg, var = "beta", rng = rng, id = id_new)
             # cat("\n", crayon::bold$yellow("test"), "\n")
             # print(test)
 
@@ -125,7 +125,7 @@ test_that("prune_range with preexisting id",
             # cat("\n", crayon::bold$yellow("target"), "\n")
             # print(target)
 
-            test <- prune_range(df = eg, var = "beta", rng = rng, id = id_new)
+            test <- prune_oob(df = eg, var = "beta", rng = rng, id = id_new)
             # cat("\n", crayon::bold$yellow("test"), "\n")
             # print(test)
 
@@ -160,7 +160,7 @@ test_that("prune_range with many preexisting SAME id",
             # cat("\n", crayon::bold$yellow("target"), "\n")
             # print(target)
 
-            test <- prune_range(df = eg, var = "beta", rng = rng, id = id_new)
+            test <- prune_oob(df = eg, var = "beta", rng = rng, id = id_new)
             # cat("\n", crayon::bold$yellow("test"), "\n")
             # print(test)
 
@@ -197,7 +197,7 @@ test_that("prune_range with many preexisting SAME id causing WARNING",
             # print(target)
             # print(levels(target$prune_id))
 
-            test <- prune_range(df = eg, var = "beta", rng = rng, id = id_old)
+            test <- prune_oob(df = eg, var = "beta", rng = rng, id = id_old)
             # cat("\n", crayon::bold$yellow("test"), "\n")
             # print(test)
             # print(levels(test$prune_id))

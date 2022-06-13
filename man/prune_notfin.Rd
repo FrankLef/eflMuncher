@@ -2,7 +2,7 @@
 % Please edit documentation in R/prune_01-B_notfin.R
 \name{prune_notfin}
 \alias{prune_notfin}
-\title{Prune \code{NA}, \code{NaN} and \code{Inf}}
+\title{Prune Rows That are Not Finite}
 \usage{
 prune_notfin(
   df,
@@ -27,10 +27,10 @@ prune_notfin(
 \item{is_inf}{TRUE: flag \code{Inf} and \code{-Inf}. default is \code{TRUE}}
 }
 \value{
-dataframe with updated \code{prune_var}  column
+dataframe with updated \code{prune_var}  column.
 }
 \description{
-Prune \code{NA}, \code{NaN} and \code{Inf},
+Prune rows that are not finite.
 }
 \details{
 Prune \code{NA}, \code{NaN} and \code{Inf}. You can select which one by
