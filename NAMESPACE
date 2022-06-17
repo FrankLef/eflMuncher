@@ -2,6 +2,8 @@
 
 export(prune)
 export(prune_fence)
+export(prune_fence_old)
+export(prune_fence_slopes)
 export(prune_oob_num)
 export(prune_proc)
 export(ren_many)

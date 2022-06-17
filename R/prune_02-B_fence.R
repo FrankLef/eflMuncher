@@ -1,3 +1,23 @@
+#' Identify the Rows Outside the Fence.
+#'
+#' Identify the rows outside the fence.
+#'
+#' Compute the fence to eliminate values that are clearly out-of-bound.
+#' Normally all values should be nonnegative. In case they are not, and
+#' offset is used. Also, sometimes the data is nowhere near zero and is such
+#' cases the fence is not useful, again in that case the offset solves that
+#' problem.
+#'
+#' @inheritParams prune
+#' @param is_offset If TRUE (default) the offset number will be
+#' \code{offset = min(min(x), min(y))}, otherwise there will be not offset,
+#' that is \code{offset = 0}.
+#'
+#' @source \emph{Statistical Data Cleaning}, Mark van der Loo and
+#' Edwin de Jonge, 2018. Section 7.5.2, p. 176-179.
+#'
+#' @return Logical vector where TRUE indicates values outside the fence.
+#' @export
 prune_fence <- function(data, cols, is_offset = TRUE) {
   checkmate::assertDataFrame(data, min.rows = 2, min.cols = 2)
   checkmate::assertCharacter(cols, min.chars = 1, len = 2, unique = TRUE,
@@ -29,6 +49,19 @@ prune_fence <- function(data, cols, is_offset = TRUE) {
 }
 
 
+#' Compute the Slopes Used for Fencing
+#'
+#' Compute the slopes used for fencing.
+#'
+#' The function compute the slopes and also applies several tests to the result.
+#' Problem with the data will always usually affect the ratio.
+#'
+#' @param x Numeric vector.
+#' @param y Numeric vector.
+#' @param tol Number, tolerance when testing the ratios.
+#'
+#' @return List with \code{small_slope} and \code{big_slope}.
+#' @export
 prune_fence_slopes <- function(x, y, tol = .Machine$double.eps^0.5) {
   checkmate::assertNumeric(x, finite = TRUE, any.missing = FALSE, min.len = 3)
   checkmate::assertNumeric(y, finite = TRUE, any.missing = FALSE, len = length(x))
@@ -37,10 +70,10 @@ prune_fence_slopes <- function(x, y, tol = .Machine$double.eps^0.5) {
   # must only used values positive values to compute the slope
   x_pos <- x[x > 0]
   y_pos <- y[y > 0]
-  assertthat::assert_that(length(x_pos) > 0,
-                          msg = "There are no positive values in scaled x.")
-  assertthat::assert_that(length(y_pos) > 0,
-                          msg = "There are no positive values in scaled y.")
+  msg <- sprintf("There are only %d positive values in scaled x.", length(x_pos))
+  assertthat::assert_that(length(x_pos) >= 2, msg = msg)
+  msg <- sprintf("There are only %d positive values in scaled y.", length(y_pos))
+  assertthat::assert_that(length(y_pos) >= 2, msg = msg)
   # cat("\n", "inside: x_pos", "\n")
   # msg <- sprintf("Range of x_pos: %s", toString(range(x_pos)))
   # print(msg)

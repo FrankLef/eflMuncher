@@ -86,12 +86,12 @@ test_that("prune_fence_slopes: errors",
             # when all <- 0 x_pos or y_pos will be empty
             x <- c(0, 0, 0)
             y <- 1:3
-            expect_error(prune_fence_slopes(x, y),
-                         regexp = "There are no positive values in x")
+            rgx <- "There are only [[:digit:]] positive values in scaled x"
+            expect_error(prune_fence_slopes(x, y), regexp = rgx)
             x <- 1:3
             y <- c(0, 0, 0)
-            expect_error(prune_fence_slopes(x, y),
-                         regexp = "There are no positive values in y")
+            rgx <- "There are only [[:digit:]] positive values in scaled y"
+            expect_error(prune_fence_slopes(x, y), regexp = rgx)
 
 
             # Fencing doesn't work when all values are the same
