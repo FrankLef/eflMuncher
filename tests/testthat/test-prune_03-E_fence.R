@@ -4,7 +4,7 @@ id_new <- "fence"  # current pruning identification
 
 # tests -------------------------------------------------------------------
 
-test_that("prune_fence: Input errors",
+test_that("prune_fence_old: Input errors",
           {
             # skip("skip this test")
 
@@ -14,11 +14,11 @@ test_that("prune_fence: Input errors",
               prune_id = factor(NA_character_)
             )
 
-            expect_error(prune_fence(eg, x = "valX", y = "valY"),
+            expect_error(prune_fence_old(eg, x = "valX", y = "valY"),
                          class = "prune_fence_error1")
           })
 
-test_that("prune_fence: all rows already pruned",
+test_that("prune_fence_old: all rows already pruned",
           {
             # skip("skip this test")
 
@@ -28,45 +28,45 @@ test_that("prune_fence: all rows already pruned",
               prune_id = factor(id_old)
             )
 
-            expect_error(prune_fence(eg, x = "valX", y = "valY"),
+            expect_error(prune_fence_old(eg, x = "valX", y = "valY"),
                          class = "prune_fence_error2")
           })
 
 
-test_that("prune_fence_slopes: errors",
+test_that("prune_fence_slopes_old: errors",
           {
             # skip("skip this test")
 
             x <- c(0, 0, 0, Inf, 3)
             y <- c(0, 1, 2, 1, 4)
-            expect_error(prune_fence_slopes(x, y), regexp = "Must be finite")
+            expect_error(prune_fence_slopes_old(x, y), regexp = "Must be finite")
 
             x <- c(0, 0, 0, NA_real_, 3)
             y <- c(0, 1, 2, 1, 4)
-            expect_error(prune_fence_slopes(x, y), regexp = "missing values")
+            expect_error(prune_fence_slopes_old(x, y), regexp = "missing values")
 
             x <- c(0, 0)
             y <- c(0, 1)
-            expect_error(prune_fence_slopes(x, y),
+            expect_error(prune_fence_slopes_old(x, y),
                          regexp = "Must have length >= 3")
 
             # Fencing doesn't work when all values are the same
             x <- rep(1, times = 5)
             y <- rep(2, times = 5)
-            expect_error(prune_fence_slopes(x, y),
+            expect_error(prune_fence_slopes_old(x, y),
                          regexp = "All values.+are the same.+")
 
             # this will give same low and high slopes
             x <- c(0, rep(1, times = 5))
             y <- c(0, rep(2, times = 5))
-            expect_error(prune_fence_slopes(x, y),
+            expect_error(prune_fence_slopes_old(x, y),
                          class = "prune_fence_calc_error1")
-            expect_error(prune_fence_slopes(x, x),
+            expect_error(prune_fence_slopes_old(x, x),
                          class = "prune_fence_calc_error1")
 
           })
 
-test_that("prune_fence_slopes",
+test_that("prune_fence_slopes_old",
           {
             # skip("skip this test")
 
@@ -81,7 +81,7 @@ test_that("prune_fence_slopes",
             target_slopes <- c("low_slope" = target_low,
                                "high_slope" = target_high)
 
-            test_slopes <- prune_fence_slopes(x_val, y_val)
+            test_slopes <- prune_fence_slopes_old(x_val, y_val)
 
             expect_identical(test_slopes, target_slopes)
 
@@ -102,7 +102,7 @@ test_that("prune_fence_slopes",
             target_slopes <- c("low_slope" = target_low,
                                "high_slope" = target_high)
 
-            test_slopes <- prune_fence_slopes(x_val, y_val)
+            test_slopes <- prune_fence_slopes_old(x_val, y_val)
 
             expect_identical(test_slopes, target_slopes)
 
@@ -123,7 +123,7 @@ test_that("prune_fence_slopes",
             target_slopes <- c("low_slope" = target_low,
                                "high_slope" = target_high)
 
-            test_slopes <- prune_fence_slopes(x_val, y_val)
+            test_slopes <- prune_fence_slopes_old(x_val, y_val)
 
             expect_identical(test_slopes, target_slopes)
 
@@ -162,7 +162,7 @@ test_that("prune_fence_df",
             expect_identical(test, target)
           })
 
-test_that("prune_fence",
+test_that("prune_fence_old",
           {
             # skip("skip this test")
 
@@ -190,7 +190,7 @@ test_that("prune_fence",
             # print(attr(target, which = "row.names"))
             # print(levels(target$prune_id))
             #
-            test <- prune_fence(df = eg, x = "x", y = "y",
+            test <- prune_fence_old(df = eg, x = "x", y = "y",
                                 prune_var = "prune_id", id = id_new,
                                 details = FALSE)
             # cat("\n", crayon::bold$yellow("test"), "\n")
@@ -202,7 +202,7 @@ test_that("prune_fence",
           })
 
 
-test_that("prune_fence with custom data ",
+test_that("prune_fence_old with custom data ",
           {
 
             # skip("skip this test")
@@ -221,7 +221,7 @@ test_that("prune_fence with custom data ",
                                       NA_character_, NA_character_))
             attr(target, which = "row.names") <- as.character(row.names(target))
 
-            test_df <- prune_fence(eg, x = "valX", y = "valY",
+            test_df <- prune_fence_old(eg, x = "valX", y = "valY",
                                    details = FALSE)
 
             test_nb <- sum(!is.na(test_df$prune_id))
@@ -241,7 +241,7 @@ test_that("prune_fence with custom data ",
 #   )
 #
 #   # the fence
-#   lst <- prune_fence(df, x = "valX", y = "valY", details = TRUE)
+#   lst <- prune_fence_old(df, x = "valX", y = "valY", details = TRUE)
 #   lst
 #
 #   # replace NA for ploting
@@ -290,7 +290,7 @@ test_that("prune_fence with custom data ",
 #   df <- data.frame(iris, prune_id = factor(NA_character_))
 #
 #   # the fence
-#   lst <- prune_fence(df, x = "Sepal.Width", y = "Petal.Width",
+#   lst <- prune_fence_old(df, x = "Sepal.Width", y = "Petal.Width",
 #                      details = TRUE)
 #   lst
 #

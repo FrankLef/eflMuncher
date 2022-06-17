@@ -46,7 +46,7 @@
 #' df <- prune_fence(df, x = "valX", y = "valY")
 #' # This should give pruned 3 points
 #' stopifnot(sum(!is.na(df$prune_id)) == 3)
-prune_fence <- function(df, x, y, prune_var = "prune_id",
+prune_fence_old <- function(df, x, y, prune_var = "prune_id",
                         id = "fence", details = FALSE) {
   checkmate::assertDataFrame(df, min.rows = 3)
   checkmate::assertNames(names(df), must.include = c(x, y, prune_var))
@@ -100,14 +100,14 @@ prune_fence <- function(df, x, y, prune_var = "prune_id",
   rnames <- attr(lst[["TRUE"]], which = "row.names")
 
   # compute the fences' specs
-  the_specs <- prune_fence_slopes(x = lst[["TRUE"]][, x],
+  the_specs <- prune_fence_slopes_old(x = lst[["TRUE"]][, x],
                                   y = lst[["TRUE"]][, y])
 
 
   # cat("\n", crayon::bold$yellow(paste("inside:", "work")), "\n")
   # print(work)
 
-  fence <- prune_fence_df(df = lst[["TRUE"]], x = x, y = y, specs = the_specs)
+  fence <- prune_fence_df_old(df = lst[["TRUE"]], x = x, y = y, specs = the_specs)
 
   lst[["TRUE"]] <- prune_upd(lst[["TRUE"]], cond = fence$flag,
                              prune_var = prune_var, id = id)
@@ -139,7 +139,7 @@ prune_fence <- function(df, x, y, prune_var = "prune_id",
 #'
 #'
 #' @return Numeric vectors with the 2 slopes
-prune_fence_slopes <- function(x, y) {
+prune_fence_slopes_old <- function(x, y) {
   checkmate::assertNumeric(x, finite = TRUE, any.missing = FALSE, min.len = 3)
   checkmate::assertNumeric(y, finite = TRUE, any.missing = FALSE, len = length(x))
 
@@ -216,7 +216,7 @@ prune_fence_slopes <- function(x, y) {
 #' @importFrom dplyr %>% select
 #'
 #' @return Dataframe with fence results
-prune_fence_df <- function(df, x, y, specs) {
+prune_fence_df_old <- function(df, x, y, specs) {
   checkmate::assertDataFrame(df, min.rows = 3)
   checkmate::assertNames(names(df), must.include = c(x, y))
   checkmate::assertNumeric(specs, len = 2, finite = TRUE, any.missing = FALSE)
