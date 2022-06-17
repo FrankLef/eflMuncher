@@ -23,29 +23,46 @@ prune_fence <- function(data, cols, is_offset = TRUE) {
   checkmate::assertCharacter(cols, min.chars = 1, len = 2, unique = TRUE,
                              any.missing = FALSE)
   checkmate::assertNames(cols, subset.of = names(data))
-  checkmate::assertNumeric(data[, cols[1]], any.missing = FALSE, finite = TRUE)
-  checkmate::assertNumeric(data[, cols[2]], any.missing = FALSE, finite = TRUE)
+  checkmate::assertNumeric(data[, cols[1]], finite = TRUE)
+  checkmate::assertNumeric(data[, cols[2]], finite = TRUE)
   checkmate::assertFlag(is_offset)
 
+  x <- data[, cols[1]]
+  y <- data[, cols[2]]
 
   if (is_offset) {
-    the_offset = min(min(data[, cols[1]]), min(data[, cols[2]]), na.rm = TRUE)
+    the_offset = min(min(x, na.rm = TRUE), min(y, na.rm = TRUE))
   } else {
     the_offset <- 0
   }
+  # cat("\n", "offset", "\n")
+  # print(the_offset)
+  # cat("\n")
   assertthat::assert_that(is.finite(the_offset))
 
-  # compute x and y with offset
-  x <- data[, cols[1]] - the_offset
-  y <- data[, cols[2]] - the_offset
+  # scale x and y with offset
+  x_scaled <- x[!is.na(x)] - the_offset
+  y_scaled <- y[!is.na(y)] - the_offset
+  # cat("\n", "x_scaled", "\n")
+  # print(x_scaled)
+  # cat("\n", "y_scaled", "\n")
+  # print(y_scaled)
   # all values must be >= 0 and finite
-  checkmate::assertNumeric(x, finite = TRUE, lower = 0)
-  checkmate::assertNumeric(y, finite = TRUE, lower = 0)
+  checkmate::assertNumeric(x_scaled, finite = TRUE, lower = 0)
+  checkmate::assertNumeric(y_scaled, finite = TRUE, lower = 0)
 
   # get the slopes
-  slopes <- prune_fence_slopes(x, y)
+  slopes <- prune_fence_slopes(x_scaled, y_scaled)
 
+  # the fence values
+  fences <- list("small" = x * slopes$small, "big" = x * slopes$big)
 
+  # all rows with NA are considered outside the fences
+  out <- is.na(x) | is.na(y)
+
+  # flag values outside the fences
+  out <- out | y < fences$small | y > fences$big
+  out
 }
 
 
@@ -56,20 +73,20 @@ prune_fence <- function(data, cols, is_offset = TRUE) {
 #' The function compute the slopes and also applies several tests to the result.
 #' Problem with the data will always usually affect the ratio.
 #'
-#' @param x Numeric vector.
-#' @param y Numeric vector.
+#' @param x Numeric vector. Must have finite values.
+#' @param y Numeric vector. Must have finite values.
 #' @param tol Number, tolerance when testing the ratios.
 #'
 #' @return List with \code{small_slope} and \code{big_slope}.
 #' @export
 prune_fence_slopes <- function(x, y, tol = .Machine$double.eps^0.5) {
-  checkmate::assertNumeric(x, finite = TRUE, any.missing = FALSE, min.len = 3)
-  checkmate::assertNumeric(y, finite = TRUE, any.missing = FALSE, len = length(x))
+  checkmate::assertNumeric(x, finite = TRUE, min.len = 3)
+  checkmate::assertNumeric(y, finite = TRUE, len = length(x))
   checkmate::assertNumber(tol, lower = 0, finite = TRUE)
 
   # must only used values positive values to compute the slope
-  x_pos <- x[x > 0]
-  y_pos <- y[y > 0]
+  x_pos <- x[x > 0 & !is.na(x)]
+  y_pos <- y[y > 0 & !is.na(y)]
   msg <- sprintf("There are only %d positive values in scaled x.", length(x_pos))
   assertthat::assert_that(length(x_pos) >= 2, msg = msg)
   msg <- sprintf("There are only %d positive values in scaled y.", length(y_pos))
@@ -83,31 +100,30 @@ prune_fence_slopes <- function(x, y, tol = .Machine$double.eps^0.5) {
   # cat("\n")
 
   # the slope used with a given x to determine the limit above which y must be
-  small_slope = min(x_pos) / max(y_pos)
+  small_slope = min(x_pos, na.rm = TRUE) / max(y_pos, na.rm = TRUE)
   # the slope used with a given x to determine the limit below which y must be
-  big_slope = max(x_pos) / min(y_pos)
+  big_slope = max(x_pos, na.rm = TRUE) / min(y_pos, na.rm = TRUE)
   assertthat::assert_that(small_slope > 0, big_slope > 0)
   # cat("\n", "inside: the slopes", "\n")
   # print(sprintf("small slope = %f, big slope = %f", small_slope, big_slope))
   # cat("\n")
 
 
-  if (abs(diff(range(x_pos))) < tol | abs(diff(range(y_pos))) < tol) {
+  x_rng <- range(x_pos)
+  y_rng <- range(y_pos)
+  if (diff(x_rng) < tol | diff(y_rng) < tol) {
     # Fencing does not work when at least one of the 2 data vectors
     # has constantv values
     msg_head <- "All pos values in x or y are about the same. Fencing won't work."
     msg_head <- cli::col_yellow(msg_head)
     msg_body <- "This happen if at least one of the 2 columns has constant data."
     msg_body <- c("X" = msg_body,
-                  "i" = sprintf("x pos value range: %s",
-                                toString(range(x_pos))),
-                  "i" = sprintf("y pos value range: %s",
-                                toString(range(y_pos))))
+                  "i" = sprintf("x pos value range: %s", toString(x_rng)),
+                  "i" = sprintf("y pos value range: %s", toString(y_rng)))
     msg <- paste(msg_head, rlang::format_error_bullets(msg_body), sep = "\n")
     rlang::abort(
       message = msg,
       class = "prune_fence_slopes_error1")
-
    }
 
   list("small" = small_slope, "big" = big_slope)

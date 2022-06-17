@@ -1,8 +1,5 @@
-# declarations ------------------------------------------------------------
-id_old <- "old"  # id for old prune id
-id_new <- "fence"  # current pruning identification
 
-# tests -------------------------------------------------------------------
+# prune_fence errors ------------------------------------------------------
 
 test_that("prune_fence: Input errors",
           {
@@ -17,19 +14,14 @@ test_that("prune_fence: Input errors",
               prune_id = NA_character_
             )
 
+            # names don't exist in data.frame
             expect_error(prune_fence(df, cols = c("valX", "valY")),
                          regexp = "Assertion on \'cols\' failed")
 
+            # values are not finite
             expect_error(prune_fence(df, cols = c("X", "Y")),
-                         regexp = "Contains missing values")
+                         regexp = "Must be finite")
 
-            df <- data.frame(
-              X = 1:5,
-              Y = c(1, 2, 3, NA_real_, 5),
-              prune_id = NA_character_
-              )
-            expect_error(prune_fence(df, cols = c("X", "Y")),
-                         regexp = "Contains missing values")
 
             df <- data.frame(
               X = 1:5,
@@ -52,7 +44,7 @@ test_that("prune_fence: Offset errors",
             )
 
             expect_error(prune_fence(df, cols = c("X", "Y"), is_offset = FALSE),
-                         regexp = "Assertion on \'x\' failed")
+                         regexp = "Assertion on \'x_scaled\' failed")
 
             df <- data.frame(
               X = 0:4,
@@ -61,9 +53,13 @@ test_that("prune_fence: Offset errors",
             )
 
             expect_error(prune_fence(df, cols = c("X", "Y"), is_offset = FALSE),
-                         regexp = "Assertion on \'y\' failed")
+                         regexp = "Assertion on \'y_scaled\' failed")
 
           })
+
+
+
+# prune_fence_slopes ------------------------------------------------------
 
 
 test_that("prune_fence_slopes: errors",
@@ -73,10 +69,6 @@ test_that("prune_fence_slopes: errors",
             x <- c(0, 0, 0, Inf, 3)
             y <- c(0, 1, 2, 1, 4)
             expect_error(prune_fence_slopes(x, y), regexp = "Must be finite")
-
-            x <- c(0, 0, 0, NA_real_, 3)
-            y <- c(0, 1, 2, 1, 4)
-            expect_error(prune_fence_slopes(x, y), regexp = "missing values")
 
             x <- c(0, 0)
             y <- c(0, 1)
@@ -176,3 +168,38 @@ test_that("prune_fence_slopes",
 
             expect_identical(test_slopes, target_slopes)
           })
+
+
+# prune_fence -------------------------------------------------------------
+
+test_that("prune_fence: easy example",
+          {
+
+            df <- data.frame(
+              x = c(0, 1:5, NA_real_),
+              y = c(NA_real_, 2:6, 0),
+              prune_id = NA_character_)
+
+            x_pos <- df$x[df$x > 0]
+            y_pos <- df$y[df$y > 0]
+            slopes <- list("small" = min(x_pos) / max(y_pos),
+                           "big" = max(x_pos) / min(y_pos))
+            fences <- list(
+              "small" = df$x * slopes$small,
+              "big" = df$x * slopes$big
+            )
+
+            target <- c(TRUE, FALSE, FALSE, FALSE, FALSE, FALSE, TRUE)
+            # cat("\n", "target", "\n")
+            # print(target)
+            # cat("\n")
+
+            out <- prune_fence(df, cols = c("x", "y"), is_offset = TRUE)
+            # cat("\n", "out", "\n")
+            # print(out)
+            # cat("\n")
+
+            expect_identical(out, target)
+          })
+
+
