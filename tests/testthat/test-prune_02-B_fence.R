@@ -87,11 +87,11 @@ test_that("prune_fence_slopes: errors",
             x <- c(0, 0, 0)
             y <- 1:3
             expect_error(prune_fence_slopes(x, y),
-                         regexp = "length[(]x_pos[)] not greater than 0")
+                         regexp = "There are no positive values in x")
             x <- 1:3
             y <- c(0, 0, 0)
             expect_error(prune_fence_slopes(x, y),
-                         regexp = "length[(]y_pos[)] not greater than 0")
+                         regexp = "There are no positive values in y")
 
 
             # Fencing doesn't work when all values are the same
@@ -121,9 +121,9 @@ test_that("prune_fence_slopes",
 
             x_pos <- x_val[x_val > 0]
             y_pos <- y_val[y_val > 0]
-            target_low <- min(x_pos) / max(y_pos)
-            target_high <- max(x_pos) / min(y_pos)
-            target_slopes <- list("low" = target_low, "high" = target_high)
+            target_small <- min(x_pos) / max(y_pos)
+            target_big <- max(x_pos) / min(y_pos)
+            target_slopes <- list("small" = target_small, "big" = target_big)
 
             test_slopes <- prune_fence_slopes(x_val, y_val)
 
@@ -136,9 +136,9 @@ test_that("prune_fence_slopes",
 
             x_pos <- x_val[x_val > 0]
             y_pos <- y_val[y_val > 0]
-            target_low <- min(x_pos) / max(y_pos)
-            target_high <- max(x_pos) / min(y_pos)
-            target_slopes <- list("low" = target_low, "high" = target_high)
+            target_small <- min(x_pos) / max(y_pos)
+            target_big <- max(x_pos) / min(y_pos)
+            target_slopes <- list("small" = target_small, "big" = target_big)
 
 
             test_slopes <- prune_fence_slopes(x_val, y_val)
@@ -152,9 +152,9 @@ test_that("prune_fence_slopes",
 
             x_pos <- x_val[x_val > 0]
             y_pos <- y_val[y_val > 0]
-            target_low <- min(x_pos) / max(y_pos)
-            target_high <- max(x_pos) / min(y_pos)
-            target_slopes <- list("low" = target_low, "high" = target_high)
+            target_small <- min(x_pos) / max(y_pos)
+            target_big <- max(x_pos) / min(y_pos)
+            target_slopes <- list("small" = target_small, "big" = target_big)
 
 
             test_slopes <- prune_fence_slopes(x_val, y_val)

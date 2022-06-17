@@ -36,16 +36,19 @@ prune_fence_slopes <- function(x, y) {
   # must only used values > 0 to compute the slope
   x_pos <- x[x > 0]
   y_pos <- y[y > 0]
-  assertthat::assert_that(length(x_pos) > 0, length(y_pos) > 0)
+  assertthat::assert_that(length(x_pos) > 0,
+                          msg = "There are no positive values in x.")
+  assertthat::assert_that(length(y_pos) > 0,
+                          msg = "There are no positive values in y.")
   # cat("\n", crayon::bold$yellow(paste("inside:", "x_pos")), "\n")
   # print(x_pos)
   # cat("\n", crayon::bold$yellow(paste("inside:", "y_pos")), "\n")
   # print(y_pos)
 
   # the slope used with a given x to determine the limit above which y must be
-  low_slope = min(x_pos) / max(y_pos)
+  small_slope = min(x_pos) / max(y_pos)
   # the slope used with a given x to determine the limit below which y must be
-  high_slope = max(x_pos) / min(y_pos)
+  big_slope = max(x_pos) / min(y_pos)
 
 
   if (length(unique(x_pos)) == 1 | length(unique(y_pos)) == 1) {
@@ -62,27 +65,28 @@ prune_fence_slopes <- function(x, y) {
       message = msg,
       class = "prune_fence_slopes_error1")
 
-   } else if (low_slope > high_slope) {
+   } else if (small_slope >= big_slope) {
     msg_head <- sprintf("The low slope must be less than the high slope.")
     msg_head <- cli::col_yellow(msg_head)
     msg_body <- c("X" = "Verify the max and min of the SCALED POSITIVE values.",
-                  "i" = sprintf("Low slope = %f", low_slope),
-                  "i" = sprintf("High slope = %f", high_slope))
+                  "i" = sprintf("Small slope = %f", small_slope),
+                  "i" = sprintf("Big slope = %f", big_slope))
     msg <- paste(msg_head, rlang::format_error_bullets(msg_body), sep = "\n")
     rlang::abort(
       message = msg,
       class = "prune_fence_slopes_error2")
-  } else if (low_slope < 0 | high_slope < 0) {
+  } else if (small_slope < .Machine$double.eps^0.5 |
+             big_slope < .Machine$double.eps^0.5) {
     msg_head <- sprintf("At least one of the 2 slopes is negative.")
     msg_head <- cli::col_yellow(msg_head)
     msg_body <- c("X" = "Verify the max and min of the SCALED POSITIVE values.",
-                  "i" = sprintf("Low slope = %f", low_slope),
-                  "i" = sprintf("High slope = %f", high_slope))
+                  "i" = sprintf("Small slope = %f", small_slope),
+                  "i" = sprintf("Big slope = %f", big_slope))
     msg <- paste(msg_head, rlang::format_error_bullets(msg_body), sep = "\n")
     rlang::abort(
       message = msg,
       class = "prune_fence_slopes_error3")
   }
 
-  list("low" = low_slope, "high" = high_slope)
+  list("small" = small_slope, "big" = big_slope)
 }
