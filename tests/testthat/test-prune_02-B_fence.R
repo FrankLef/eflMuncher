@@ -199,19 +199,35 @@ test_that("prune_fence: Full example", {
   data(fences_df)
   df <- fences_df
 
-  out <- prune_fence(df, cols = c("X", "Y"))
-  out <- out
+  out <- prune_fence(df, cols = c("X", "Y"), info = TRUE)
   # cat("\n", "out", "\n")
-  # print(out)
+  # print(out$results)
   # cat("\n")
 
-  target <- df$is_oob
+  target <- df
   # cat("\n", "target", "\n")
   # print(target)
   # cat("\n")
 
-  expect_identical(out, target)
+  expect_identical(out$oob, target$oob)
   })
+
+test_that("prune_fence: Full example with NA", {
+  data(fencesNA_df)
+  df <- fencesNA_df
+
+  out <- prune_fence(df, cols = c("X", "Y"), info = TRUE)
+  # cat("\n", "out", "\n")
+  # print(out$results)
+  # cat("\n")
+
+  target <- df
+  # cat("\n", "target", "\n")
+  # print(target)
+  # cat("\n")
+
+  expect_identical(out$oob, target$oob)
+})
 
 test_that("prune_fence: Iris", {
   data(iris)
@@ -231,19 +247,23 @@ test_that("prune_fence: Iris", {
 
 
 # plot example
-data(fences_df)
-df <- fences_df
-out <- prune_fence(df, cols = c("X", "Y"), is_offset = TRUE, info = TRUE)
-df$is_oob <- out$is_outside
-df$small <- out$fences$small_inv
-df$big <- out$fences$big_inv
+# data(fences_df)
+# df <- fences_df
+# out <- prune_fence(df, cols = c("X", "Y"), is_offset = TRUE, info = TRUE)
+# df_plot <- out$results
+# df_plot$label <- paste0("(", df_plot$x, ", ", df_plot$y, ")")
 
 # the plot
-# the_ylim <- c(NA_real_, ceiling(max(df$Y)))
+# the_ylim <- c(NA_real_, ceiling(max(df_plot$y)))
 # the_subtitle <- sprintf("%d inside the fence, %d outside the fence.",
-#                         sum(!df$is_oob), sum(df$is_oob))
-# p <- ggplot2::ggplot(data = df, ggplot2::aes(x = X, y = Y)) +
-#   ggplot2::geom_point(ggplot2::aes(color = is_oob, shape = is_oob, size = is_oob)) +
+#                         sum(!df_plot$oob), sum(df_plot$oob))
+# the_labs <- ggplot2::labs(
+#   title = "Example of data with a fence",
+#   subtitle = the_subtitle,
+#   x = "X", y = "Y"
+# )
+# p <- ggplot2::ggplot(data = df_plot, ggplot2::aes(x = x, y = y)) +
+#   ggplot2::geom_point(ggplot2::aes(color = oob, shape = oob, size = oob)) +
 #   ggplot2::geom_line(ggplot2::aes(y = small),
 #                      linetype = "dotdash", color = "chocolate", size = 1) +
 #   ggplot2::geom_line(ggplot2::aes(y = big),
@@ -259,41 +279,91 @@ df$big <- out$fences$big_inv
 #   ggplot2::theme_light() +
 #   ggplot2::theme(legend.position = "none") +
 #   ggplot2::theme(title = ggplot2::element_text(color = "midnightblue")) +
-#   ggplot2::labs(title = "Example of data with a fence",
-#        subtitle = the_subtitle)
+#   the_labs
 # p
 
 
-# plot iris ---------------------------------------------------------------
 
-data(iris)
-df <- iris
-out <- prune_fence(df, cols = c("Sepal.Width", "Petal.Width"),
-                   is_offset = TRUE, info = TRUE)
-# out$is_outside
-# out$slopes
-# out$offsets
-# out$fences
+# plot fenceNA example ----------------------------------------------------
 
-df$is_oob <- out$is_outside
-df$small <- out$fences$small_inv
-df$big <- out$fences$big_inv
-
-df$label <- paste0("(", df$Sepal.Width, ", ", df$Petal.Width, ")")
-df$label[!df$is_oob] <- NA_character_
+# plot example
+# data(fencesNA_df)
+# df <- fencesNA_df
+# out <- prune_fence(df, cols = c("X", "Y"), is_offset = TRUE, info = TRUE)
+# df_plot <- out$results
+# df_plot
+# write labels before replacing NA
+# df_plot$label <- paste0("(", df_plot$x, ", ", df_plot$y, ")")
+# replace NA with 0
+# df_plot$x[is.na(df_plot$x)] <- 0
+# df_plot$y[is.na(df_plot$y)] <- 0
+# df_plot
+# create df for fences without the NA
+# df_fences <- df_plot
+# df_fences <- df_fences[!is.na(df_fences$small) & !is.na(df_fences$big), ]
 
 # the plot
-# the_ylim <- c(NA_real_, ceiling(max(df$Petal.Width)))
+# the_xlim <- c(NA_real_, ceiling(max(df_plot$x)))
+# the_ylim <- c(NA_real_, ceiling(max(df_plot$y)))
 # the_subtitle <- sprintf("%d inside the fence, %d outside the fence.",
-#                         sum(!df$is_oob), sum(df$is_oob))
-# p <- ggplot2::ggplot(data = df, ggplot2::aes(x = Sepal.Width, y = Petal.Width)) +
-#   ggplot2::geom_point(ggplot2::aes(color = is_oob, shape = is_oob, size = is_oob)) +
-#   ggplot2::geom_text(ggplot2::aes(label = label), nudge_y = 0.05,
-#                      color = "navyblue", size = 3) +
+#                         sum(!df_plot$oob), sum(df_plot$oob))
+# the_labs <- ggplot2::labs(
+#   title = "Example of data with a fence with NA",
+#   subtitle = the_subtitle,
+#   x = "X", y = "Y"
+# )
+# p <- ggplot2::ggplot(data = df_plot, ggplot2::aes(x = x, y = y)) +
+#   ggplot2::geom_point(ggplot2::aes(color = oob, shape = oob, size = oob)) +
+#   ggplot2::geom_line(df_fences, mapping = ggplot2::aes(x = x, y = small),
+#                      inherit.aes = FALSE,
+#                      linetype = "dotdash", color = "chocolate", size = 1) +
+#   ggplot2::geom_line(df_fences, mapping = ggplot2::aes(x = x, y = big),
+#                      inherit.aes = FALSE,
+#                      linetype = "dotdash", color = "chocolate", size = 1) +
+#   ggplot2::geom_text(ggplot2::aes(label = label), nudge_y = -0.25,
+#                      color = "navyblue") +
+#   ggplot2::scale_color_manual(values = c("FALSE" = "darkgreen",
+#                                          "TRUE" = "violetred")) +
+#   ggplot2::scale_shape_manual(values = c("FALSE" = 19,
+#                                          "TRUE" = 18)) +
+#   ggplot2::scale_size_manual(values = c("TRUE" = 5, "FALSE" = 4)) +
+#   ggplot2::coord_cartesian(ylim = the_ylim) +
+#   ggplot2::theme_light() +
+#   ggplot2::theme(legend.position = "none") +
+#   ggplot2::theme(title = ggplot2::element_text(color = "midnightblue")) +
+#   the_labs
+# p
+
+
+
+# plot iris example -------------------------------------------------------
+
+
+# data(iris)
+# df <- iris
+# out <- prune_fence(df, cols = c("Sepal.Width", "Petal.Width"),
+#                    is_offset = TRUE, info = TRUE)
+# df_plot <- out$results
+# df_plot$label <- paste0("(", df_plot$x, ", ", df_plot$y, ")")
+# df_plot$label[!out$is_oob] <- NA_character_
+
+# the plot
+# the_ylim <- c(NA_real_, ceiling(max(df_plot$y)))
+# the_subtitle <- sprintf("%d inside the fence, %d outside the fence.",
+#                         sum(!df_plot$oob), sum(df_plot$oob))
+# the_labs <- ggplot2::labs(
+#   title = "Iris data with a fence",
+#   subtitle = the_subtitle,
+#   x = "Sepal.Width", y = "Petal.Width"
+# )
+# p <- ggplot2::ggplot(data = df_plot, ggplot2::aes(x = x, y = y)) +
+#   ggplot2::geom_point(ggplot2::aes(color = oob, shape = oob, size = oob)) +
 #   ggplot2::geom_line(ggplot2::aes(y = small),
 #                      linetype = "dotdash", color = "chocolate", size = 1) +
 #   ggplot2::geom_line(ggplot2::aes(y = big),
 #                      linetype = "dotdash", color = "chocolate", size = 1) +
+#   ggplot2::geom_text(ggplot2::aes(label = label), nudge_y = -0.1,
+#                      color = "navyblue", size = 3) +
 #   ggplot2::scale_color_manual(values = c("FALSE" = "darkgreen",
 #                                          "TRUE" = "violetred")) +
 #   ggplot2::scale_shape_manual(values = c("FALSE" = 19,
@@ -303,6 +373,5 @@ df$label[!df$is_oob] <- NA_character_
 #   ggplot2::theme_light() +
 #   ggplot2::theme(legend.position = "none") +
 #   ggplot2::theme(title = ggplot2::element_text(color = "midnightblue")) +
-#   ggplot2::labs(title = "Iris data with a fence",
-#                 subtitle = the_subtitle)
+#   the_labs
 # p

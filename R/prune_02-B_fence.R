@@ -86,15 +86,9 @@ prune_fence <- function(data, cols, is_offset = TRUE, info = FALSE) {
   # get the slopes
   slopes <- prune_fence_slopes(x_scaled, y_scaled)
 
-  # the fence values
-  fences <- data.frame("x" = x,
-                       "y" = y,
-                       "small" = x_scaled * slopes$small,
-                       "big" = x_scaled * slopes$big)
-  # add the computation of the fences on the original scale,
-  # that is we invert to return to th original scale
-  fences$small_inv <- fences$small + offsets$y
-  fences$big_inv <- fences$big + offsets$y
+  # compute te coordinates of the fences
+  fences <- list("small" = x_scaled * slopes$small,
+                 "big" = x_scaled * slopes$big)
 
   # all rows with NA are considered outside the fences
   is_outside <- is.na(x_scaled) | is.na(y_scaled)
@@ -103,14 +97,25 @@ prune_fence <- function(data, cols, is_offset = TRUE, info = FALSE) {
   is_outside <- is_outside | y_scaled < fences$small
   is_outside <- is_outside | y_scaled > fences$big
 
+  # the fence values
+  results <- data.frame("x" = x,
+                       "y" = y,
+                       "small" = fences$small,
+                       "big" = fences$big,
+                       "small_inv" = fences$small + offsets$y,
+                       "big_inv" = fences$big + offsets$y,
+                       "oob" = is_outside)
+  # must have same nb of rows as data
+  assertthat::assert_that(nrow(results) == nrow(data))
+
   # return results depending on info
   if(!info) {
     out <- is_outside
   } else {
-    out <- list("is_outside" = is_outside,
+    out <- list("oob" = is_outside,
                 "slopes" = slopes,
                 "offsets" = offsets,
-                "fences" = fences)
+                "results" = results)
   }
   out
 }
