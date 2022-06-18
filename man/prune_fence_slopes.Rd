@@ -7,9 +7,9 @@
 prune_fence_slopes(x, y, tol = .Machine$double.eps^0.5)
 }
 \arguments{
-\item{x}{Numeric vector.}
+\item{x}{Numeric vector. Must have finite values.}
 
-\item{y}{Numeric vector.}
+\item{y}{Numeric vector. Must have finite values.}
 
 \item{tol}{Number, tolerance when testing the ratios.}
 }

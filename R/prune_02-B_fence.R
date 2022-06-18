@@ -3,22 +3,47 @@
 #' Identify the rows outside the fence.
 #'
 #' Compute the fence to eliminate values that are clearly out-of-bound.
-#' Normally all values should be nonnegative. In case they are not, and
+#' Normally all values should be non-negative. In case they are not, and
 #' offset is used. Also, sometimes the data is nowhere near zero and is such
 #' cases the fence is not useful, again in that case the offset solves that
-#' problem.
+#' problem. The algorithm will generate an error when \code{-Inf, Inf} values
+#' are in the input. The \code{NA} are treated as being out-of-bound.
+#'
+#' @section info:
+#'
+#' if the argument \code{info} is set to \code{TRUE} then a list with the following elements is given.
+#' \describe{
+#'   \item{is_outside}{Logical vector, TRUE is when the row is outside the
+#'   fence limits, FALSE otherwise.}
+#'   \item{slopes}{The slopes for the small and big fences.}
+#'   \item{offsets}{The offset used to scale the x and y values.}
+#'   \item{fences}{Dataframe with x = original x values; y = original y values,
+#'   small = y value of the small fence on the scaled coordinates;
+#'   big = y value of the big fence on the scaled coordinates;
+#'   small_inv = y value of the small fence on the original scale
+#'   (useful for plotting);
+#'   big_inv = y value of the big fence on the original scale
+#'   (useful for plotting.)}
+#' }
 #'
 #' @inheritParams prune
 #' @param is_offset If TRUE (default) the offset number will be
 #' \code{offset = min(min(x), min(y))}, otherwise there will be not offset,
 #' that is \code{offset = 0}.
+#' @param info If FALSE (default) a logical vector with the is returned. If TRUE
+#' a list with the logical vector is returned as well as the slopes. This is
+#' used usually to help plot the fences.
 #'
 #' @source \emph{Statistical Data Cleaning}, Mark van der Loo and
 #' Edwin de Jonge, 2018. Section 7.5.2, p. 176-179.
 #'
-#' @return Logical vector where TRUE indicates values outside the fence.
+#' @return If \code{info = FALSE} (default), logical vector where TRUE indicates
+#' values outside the fence. If \code{info = TRUE}, a list with
+#' the logical vector called \code{is_outside}, the list of slopes called
+#' \code{slopes}, the list of offsets called \code{offsets}, and the data.frame
+#' of fences data \code{fences}.
 #' @export
-prune_fence <- function(data, cols, is_offset = TRUE) {
+prune_fence <- function(data, cols, is_offset = TRUE, info = FALSE) {
   checkmate::assertDataFrame(data, min.rows = 2, min.cols = 2)
   checkmate::assertCharacter(cols, min.chars = 1, len = 2, unique = TRUE,
                              any.missing = FALSE)
@@ -30,19 +55,26 @@ prune_fence <- function(data, cols, is_offset = TRUE) {
   x <- data[, cols[1]]
   y <- data[, cols[2]]
 
+  # the data is scaled to the minimum of all data.
+  # This normally increases the chances of the algorithm to work.
+  # Some cases don't work when not using an offset.
+  # See the test when is_offset = FALSE
   if (is_offset) {
-    the_offset = min(min(x, na.rm = TRUE), min(y, na.rm = TRUE))
+    # the_offset = min(min(x, na.rm = TRUE), min(y, na.rm = TRUE))
+    offsets <- list("x" = min(x, na.rm = TRUE), "y" = min(y, na.rm = TRUE))
   } else {
-    the_offset <- 0
+    # the_offset <- 0
+    offsets <- list("x" = 0, "y" = 0)
   }
   # cat("\n", "offset", "\n")
   # print(the_offset)
   # cat("\n")
-  assertthat::assert_that(is.finite(the_offset))
+  # assertthat::assert_that(is.finite(the_offset))
+  assertthat::assert_that(is.finite(offsets$x), is.finite(offsets$y))
 
   # scale x and y with offset
-  x_scaled <- x[!is.na(x)] - the_offset
-  y_scaled <- y[!is.na(y)] - the_offset
+  x_scaled <- x - offsets$x
+  y_scaled <- y - offsets$y
   # cat("\n", "x_scaled", "\n")
   # print(x_scaled)
   # cat("\n", "y_scaled", "\n")
@@ -55,13 +87,31 @@ prune_fence <- function(data, cols, is_offset = TRUE) {
   slopes <- prune_fence_slopes(x_scaled, y_scaled)
 
   # the fence values
-  fences <- list("small" = x * slopes$small, "big" = x * slopes$big)
+  fences <- data.frame("x" = x,
+                       "y" = y,
+                       "small" = x_scaled * slopes$small,
+                       "big" = x_scaled * slopes$big)
+  # add the computation of the fences on the original scale,
+  # that is we invert to return to th original scale
+  fences$small_inv <- fences$small + offsets$y
+  fences$big_inv <- fences$big + offsets$y
 
   # all rows with NA are considered outside the fences
-  out <- is.na(x) | is.na(y)
+  is_outside <- is.na(x_scaled) | is.na(y_scaled)
 
   # flag values outside the fences
-  out <- out | y < fences$small | y > fences$big
+  is_outside <- is_outside | y_scaled < fences$small
+  is_outside <- is_outside | y_scaled > fences$big
+
+  # return results depending on info
+  if(!info) {
+    out <- is_outside
+  } else {
+    out <- list("is_outside" = is_outside,
+                "slopes" = slopes,
+                "offsets" = offsets,
+                "fences" = fences)
+  }
   out
 }
 
@@ -85,6 +135,7 @@ prune_fence_slopes <- function(x, y, tol = .Machine$double.eps^0.5) {
   checkmate::assertNumber(tol, lower = 0, finite = TRUE)
 
   # must only used values positive values to compute the slope
+  # and make sure all NA are excluded
   x_pos <- x[x > 0 & !is.na(x)]
   y_pos <- y[y > 0 & !is.na(y)]
   msg <- sprintf("There are only %d positive values in scaled x.", length(x_pos))

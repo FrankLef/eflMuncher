@@ -39,6 +39,9 @@
 #' vector with a minimum length of one.
 #' @param ... Additional arguments used by \code{func}.
 #'
+#' @importFrom dplyr mutate
+#' @importFrom rlang :=
+#'
 #' @seealso prune_proc
 #'
 #' @return Dataframe with updated \code{prune_var} column.
@@ -79,7 +82,7 @@ prune <- function(data, id = NA_character_, prune_var = "prune_id", func = NULL,
   # If func = NULL and id = NA then reset prune_id to NA
   if (is.null(func) & is.na(id)) {
     out <- data |>
-      mutate(!!prune_var := NA_character_)
+      dplyr::mutate(!!prune_var := NA_character_)
     return(out)
   }
 

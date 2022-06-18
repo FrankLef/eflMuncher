@@ -8,7 +8,7 @@
 Edwin de Jonge, 2018. Section 7.5.2, p. 176-179.
 }
 \usage{
-prune_fence(data, cols, is_offset = TRUE)
+prune_fence(data, cols, is_offset = TRUE, info = FALSE)
 }
 \arguments{
 \item{data}{Dataframe.}
@@ -19,17 +19,45 @@ vector with a minimum length of one.}
 \item{is_offset}{If TRUE (default) the offset number will be
 \code{offset = min(min(x), min(y))}, otherwise there will be not offset,
 that is \code{offset = 0}.}
+
+\item{info}{If FALSE (default) a logical vector with the is returned. If TRUE
+a list with the logical vector is returned as well as the slopes. This is
+used usually to help plot the fences.}
 }
 \value{
-Logical vector where TRUE indicates values outside the fence.
+If \code{info = FALSE} (default), logical vector where TRUE indicates
+values outside the fence. If \code{info = TRUE}, a list with
+the logical vector called \code{is_outside}, the list of slopes called
+\code{slopes}, the list of offsets called \code{offsets}, and the data.frame
+of fences data \code{fences}.
 }
 \description{
 Identify the rows outside the fence.
 }
 \details{
 Compute the fence to eliminate values that are clearly out-of-bound.
-Normally all values should be nonnegative. In case they are not, and
+Normally all values should be non-negative. In case they are not, and
 offset is used. Also, sometimes the data is nowhere near zero and is such
 cases the fence is not useful, again in that case the offset solves that
-problem.
+problem. The algorithm will generate an error when \code{-Inf, Inf} values
+are in the input. The \code{NA} are treated as being out-of-bound.
 }
+\section{info}{
+
+
+if the argument \code{info} is set to \code{TRUE} then a list with the following elements is given.
+\describe{
+\item{is_outside}{Logical vector, TRUE is when the row is outside the
+fence limits, FALSE otherwise.}
+\item{slopes}{The slopes for the small and big fences.}
+\item{offsets}{The offset used to scale the x and y values.}
+\item{fences}{Dataframe with x = original x values; y = original y values,
+small = y value of the small fence on the scaled coordinates;
+big = y value of the big fence on the scaled coordinates;
+small_inv = y value of the small fence on the original scale
+(useful for plotting);
+big_inv = y value of the big fence on the original scale
+(useful for plotting.)}
+}
+}
+
