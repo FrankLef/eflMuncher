@@ -9,8 +9,11 @@
 #'
 #' When \code{func = NULL} and \code{id = NA_character_}, then the column
 #' \code{prune_var} will be reset to \code{NA}. If the column \code{prune_var}
-#' does not exist it will be created.  This is used usually to create the
-#' \code{prune_var} column. It can also be used to reset it if it already exists.
+#' does not exist it will be created.  This is used to create the
+#' \code{prune_var} column in which case the command would simply be
+#' \code{prune(data)}. It can also be used to reset it if it already exists, in
+#' that case also the command would simply be \code{prune(data)}. However, when
+#' the column \code{prune_var} already exists, an error will be issued.
 #'
 #' When \code{func = NULL} and \code{id != NA_character}, then an error message
 #' will be issued as an \code{id} cannot exist without a corresponding function.
@@ -81,10 +84,22 @@ prune <- function(data, id = NA_character_, prune_var = "prune_id", func = NULL,
 
   # If func = NULL and id = NA then reset prune_id to NA
   if (is.null(func) & is.na(id)) {
-    out <- data |>
-      dplyr::mutate(!!prune_var := NA_character_)
-    return(out)
+    if (prune_var %in% names(data)) {
+      msg_head <- cli::col_yellow(sprintf("%s already exists.", prune_var))
+      msg_body <- c("i" = "Delete the column first if you want to reset it.")
+      msg <- paste(msg_head, rlang::format_error_bullets(msg_body), sep = "\n")
+      rlang::abort(
+        message = msg,
+        class = "prune_error3",
+        val = prune_var)
+    } else {
+      out <- data |>
+        dplyr::mutate(!!prune_var := NA_character_)
+      return(out)
+    }
   }
+
+
 
   # at this point we must have func !- NULL and id != NA
   # and cols should be a subset of names(data)

@@ -38,8 +38,11 @@ Set the column \code{prune_var} to \code{id} if the condition defined by
 
 When \code{func = NULL} and \code{id = NA_character_}, then the column
 \code{prune_var} will be reset to \code{NA}. If the column \code{prune_var}
-does not exist it will be created.  This is used usually to create the
-\code{prune_var} column. It can also be used to reset it if it already exists.
+does not exist it will be created.  This is used to create the
+\code{prune_var} column in which case the command would simply be
+\code{prune(data)}. It can also be used to reset it if it already exists, in
+that case also the command would simply be \code{prune(data)}. However, when
+the column \code{prune_var} already exists, an error will be issued.
 
 When \code{func = NULL} and \code{id != NA_character}, then an error message
 will be issued as an \code{id} cannot exist without a corresponding function.
