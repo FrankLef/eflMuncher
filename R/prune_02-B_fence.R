@@ -108,7 +108,6 @@ prune_fence <- function(data, cols, is_offset = TRUE, info = FALSE) {
   # must have same nb of rows as data
   assertthat::assert_that(nrow(results) == nrow(data))
 
-  # return results depending on info
   if(!info) {
     out <- is_outside
   } else {
