@@ -2,9 +2,8 @@
 #'
 #' Example dataframe to use with fencing algorithm.
 #'
-#' An example with data points outside of the \emph{fence} and \code{NA} that
-#' are processed with the fencing algorithm. See \code{prune_fence} function
-#' for details.
+#' An example with data points outside of the \emph{fence} processed with the
+#' fencing algorithm. See \code{prune_fence} function for details.
 #'
 #' @docType data
 #'
@@ -20,9 +19,9 @@
 #'
 "fences_df"
 
-#' Example Dataframe to Use with Fencing Algorithm
+#' Example Dataframe, With \code{NA}s, to Use with Fencing Algorithm
 #'
-#' Example dataframe to use with fencing algorithm.
+#' Example dataframe, with \code{NA}s, to use with fencing algorithm.
 #'
 #' An example with data points outside of the \emph{fence} and \code{NA} that
 #' are processed with the fencing algorithm. See \code{prune_fence} function

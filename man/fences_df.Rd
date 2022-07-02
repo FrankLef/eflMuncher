@@ -22,8 +22,7 @@ fences_df
 Example dataframe to use with fencing algorithm.
 }
 \details{
-An example with data points outside of the \emph{fence} and \code{NA} that
-are processed with the fencing algorithm. See \code{prune_fence} function
-for details.
+An example with data points outside of the \emph{fence} processed with the
+fencing algorithm. See \code{prune_fence} function for details.
 }
 \keyword{datasets}

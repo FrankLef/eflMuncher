@@ -25,30 +25,3 @@ test_that("prune_proc: errors", {
                           func = identity, cols = "unif"),
                regexp = "Assertion on \'id\' failed")
 })
-
-test_that("prune_proc: identity()", {
-
-  # the identity function returns the data as is
-
-  df <- data.frame(
-    unif = runif(5),
-    prune_var = NA_character_)
-  df[2, "prune_var"] <- "id"
-  # cat("\n", "df", "\n")
-  # print(df)
-  # cat("\n")
-
-  out <- prune_proc(data = df, id = "not_id", prune_var = "prune_var",
-                    func = identity, cols = "unif")
-  # cat("\n", "out", "\n")
-  # print(out)
-  # cat("\n")
-
-  target <- df
-  # cat("\n", "target", "\n")
-  # print(target)
-  # cat("\n")
-
-  expect_identical(out, target)
-})
-

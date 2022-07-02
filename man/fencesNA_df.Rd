@@ -3,7 +3,7 @@
 \docType{data}
 \name{fencesNA_df}
 \alias{fencesNA_df}
-\title{Example Dataframe to Use with Fencing Algorithm}
+\title{Example Dataframe, With \code{NA}s, to Use with Fencing Algorithm}
 \format{
 Dataframe with 10 rows and 5 variables.
 \describe{
@@ -19,7 +19,7 @@ Dataframe with 10 rows and 5 variables.
 fencesNA_df
 }
 \description{
-Example dataframe to use with fencing algorithm.
+Example dataframe, with \code{NA}s, to use with fencing algorithm.
 }
 \details{
 An example with data points outside of the \emph{fence} and \code{NA} that

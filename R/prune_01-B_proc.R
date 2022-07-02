@@ -14,7 +14,7 @@
 #' @export
 prune_proc <- function(data, id = NA_character_, prune_var = "prune_id",
                        func = NULL, cols, ...) {
-  # at this point we should hav func !- NULL and id != NA
+  # at this point we should have func !- NULL and id != NA
   # and cols should be a subset of names(data)
   checkmate::assertDataFrame(data, min.cols = 2, min.rows = 1)
   checkmate::assertString(id, min.chars = 1 , na.ok = FALSE, null.ok = FALSE)
@@ -22,23 +22,19 @@ prune_proc <- function(data, id = NA_character_, prune_var = "prune_id",
   checkmate::assertFunction(func, null.ok = FALSE)
   checkmate::assertNames(cols, subset.of = names(data))
   checkmate::assertNames(id, disjunct.from = cols)  # id must not be in cols
-  # validate function name
-  func_name <- deparse(substitute(func))
-  func_choices <- c("identity", "prune_oob_num", "prune_oob_date",
-                    "prune_fence")
-  checkmate::assertChoice(x = func_name, choices = func_choices)
+  checkmate::assertFunction(func)
 
 
   # rows todo are the ones with id or NA
-  # NOTE: Do not use  != id as NA create perror with data.frame below
+  # NOTE: Do not use  != id as NA create error with data.frame below
   is_todo <- data[, prune_var] == id | is.na(data[, prune_var])
 
-  if (grepl(pattern = "identity", x = func_name, ignore.case = TRUE)) {
-    # identity does nothing
-    is_select <- rep.int(FALSE, times = nrow(data))
-  } else {
-    is_select <- func(data, cols = cols, ...)
-  }
+  # apply the function
+  is_select <- tryCatch(func(data, cols = cols, ...),
+                        error = function(cond) {
+                          msg <- "Verify the function given to prune_proc."
+                          stop(msg)
+                        })
   assertthat::assert_that(length(is_select) == nrow(data))
 
   # do not change the rows that are not to do
