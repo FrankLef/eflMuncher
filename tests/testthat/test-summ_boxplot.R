@@ -17,6 +17,7 @@ test_that("summ_boxplot: log = FALSE", {
   # print(out)
   # cat("\n")
 
+
   target <- data.frame(
     Species = c("setosa", "versicolor", "virginica"),
     low_whisk = c(4.3, 4.9, 5.6),
@@ -46,12 +47,14 @@ test_that("summ_boxplot: log = TRUE", {
 
   target <- data.frame(
     Species = c("setosa", "versicolor", "virginica"),
-    low_whisk = c(73.7, 134.3, 270.4),
-    low_hinge = c(121.5, 270.4, 492.7),
-    med = c(148.4, 365.0, 665.1),
-    high_hinge = c(181.3, 544.6, 992.3),
-    high_whisk = c(330.3, 1096.6, 2697.3)) |>
-    mutate(Species = as.factor(Species))
+    low_whisk = c(4.3, 4.9, 5.6),
+    low_hinge = c(4.8, 5.6, 6.2),
+    med = c(5, 5.9, 6.5),
+    high_hinge = c(5.2, 6.3, 6.9),
+    high_whisk = c(5.8, 7, 7.9)) |>
+    mutate(Species = as.factor(Species)) |>
+    mutate(dplyr::across(.cols = where(is.numeric), .fns = exp)) |>
+    mutate(dplyr::across(.cols = where(is.numeric), .fns = round, digits = 1))
   # cat("\n", "target", "\n")
   # print(target)
   # cat("\n")
