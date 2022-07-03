@@ -1,16 +1,17 @@
 test_that("summ_boxplot: Input Errors", {
   df <- iris
 
-  rgx <- "Assertion on \'c[(]group_var, box_var[)]\'"
-  expect_error(summ_boxplot(df, group_var = "wrong", box_var = "Sepal.Length",
+  rgx <- "Must group by variables found in `.data`"
+  expect_error(summ_boxplot(df, box_var = "Sepal.Length",
+                            group_var = "wrong",
                             prune_var = NULL, log = TRUE),
                regexp = rgx)
 })
 
-test_that("summ_boxplot: log = FALSE", {
+test_that("summ_boxplot: prune_var = NULL, log = FALSE", {
   df <- iris
 
-  out <- summ_boxplot(df, group_var = "Species", box_var = "Sepal.Length",
+  out <- summ_boxplot(df, box_var = "Sepal.Length", group_var = "Species",
                       prune_var = NULL, log = FALSE) |>
     as.data.frame()
   # cat("\n", "out", "\n")
@@ -33,10 +34,10 @@ test_that("summ_boxplot: log = FALSE", {
   expect_identical(out, target)
 })
 
-test_that("summ_boxplot: log = TRUE", {
+test_that("summ_boxplot: prune_var = NULL, log = TRUE", {
   df <- iris
 
-  out <- summ_boxplot(df, group_var = "Species", box_var = "Sepal.Length",
+  out <- summ_boxplot(df, box_var = "Sepal.Length", group_var = "Species",
                       prune_var = NULL, log = TRUE) |>
     mutate(dplyr::across(.cols = where(is.numeric), .fns = round, digits = 1)) |>
     dplyr::select(Species, low_whisk, low_hinge, med, high_hinge, high_whisk) |>
@@ -62,3 +63,22 @@ test_that("summ_boxplot: log = TRUE", {
   expect_identical(out, target)
 })
 
+test_that("summ_boxplot: group_var = NULL, prune_var = NULL, log = FALSE", {
+  df <- iris
+
+  out <- summ_boxplot(df, box_var = "Sepal.Length", log = FALSE) |>
+    as.data.frame()
+  # cat("\n", "out", "\n")
+  # print(out)
+  # cat("\n")
+
+  the_names <- c('low_whisk','low_hinge','med','high_hinge','high_whisk')
+  target <- stats::setNames(grDevices::boxplot.stats(df$Sepal.Length)$stats,
+                            nm = the_names)
+  target <- data.frame(t(target))
+  # cat("\n", "target", "\n")
+  # print(target)
+  # cat("\n")
+
+  expect_identical(out, target)
+})

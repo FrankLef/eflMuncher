@@ -5,8 +5,9 @@
 #' The summary allows to exclude pruned data from the stats.
 #'
 #' @param data Dataframe.
-#' @param group_var Name of grouping variable.
 #' @param stats_var Name of variable used to compute the stats.
+#' @param group_var Name of grouping variable. If \code{NULL}, the summary will
+#' only have one line for all rows, without grouping.
 #' @param prune_var Name of variable with prune id. If \code{NULL}, no filter
 #' is used to remove pruned rows.
 #' @param log TRUE: Convert computations with \code{exp}.
@@ -16,10 +17,11 @@
 #'
 #' @return Data.frame with boxplot.stats by \code{group_var}.
 #' @export
-summ_stats <- function(data, group_var = "group", stats_var = "ratio_log",
+summ_stats <- function(data, stats_var = "ratio_log", group_var = NULL,
                          prune_var = NULL, log = TRUE) {
   checkmate::assertDataFrame(data, min.cols = 2, min.rows = 1)
-  checkmate::assertNames(c(group_var, stats_var), subset.of = names(data))
+  checkmate::assertNames(stats_var, subset.of = names(data))
+  checkmate::assertString(group_var, min.chars = 1, null.ok = TRUE)
   checkmate::assertString(prune_var, min.chars = 1, null.ok = TRUE)
 
   # SOURCE: very good source with more good details
@@ -32,18 +34,21 @@ summ_stats <- function(data, group_var = "group", stats_var = "ratio_log",
       dplyr::filter(is.na(.data[[prune_var]]))
   }
 
+  # group by group if a grouping variable is provided
+  if (!is.null(group_var)) {
+    data <- data |>
+      group_by(.data[[group_var]])
+  }
 
   # depending on log, the name of the total column changes
   if (log) {
     # if log = TRUE then do the inverse with exp
     out <- data |>
-      dplyr::group_by(.data[[group_var]]) |>
       dplyr::summarise(nb = dplyr::n(),
                        tot_log = sum(.data[[stats_var]])) |>
       mutate(tot = exp(.data$tot_log))
   } else {
     out <- data |>
-      dplyr::group_by(.data[[group_var]]) |>
       dplyr::summarise(nb = dplyr::n(),
                        tot = sum(.data[[stats_var]]))
   }

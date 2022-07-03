@@ -6,8 +6,8 @@
 \usage{
 summ_stats(
   data,
-  group_var = "group",
   stats_var = "ratio_log",
+  group_var = NULL,
   prune_var = NULL,
   log = TRUE
 )
@@ -15,9 +15,10 @@ summ_stats(
 \arguments{
 \item{data}{Dataframe.}
 
-\item{group_var}{Name of grouping variable.}
-
 \item{stats_var}{Name of variable used to compute the stats.}
+
+\item{group_var}{Name of grouping variable. If \code{NULL}, the summary will
+only have one line for all rows, without grouping.}
 
 \item{prune_var}{Name of variable with prune id. If \code{NULL}, no filter
 is used to remove pruned rows.}

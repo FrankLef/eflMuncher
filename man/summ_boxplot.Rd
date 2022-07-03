@@ -3,11 +3,14 @@
 \name{summ_boxplot}
 \alias{summ_boxplot}
 \title{Summary with \code{boxplot.stats}}
+\source{
+\url{https://stackoverflow.com/questions/56669653/boxplot-stats-in-dplyr-with-groups}
+}
 \usage{
 summ_boxplot(
   data,
-  group_var = "group",
   box_var = "ratio_log",
+  group_var = NULL,
   prune_var = NULL,
   log = TRUE
 )
@@ -15,9 +18,10 @@ summ_boxplot(
 \arguments{
 \item{data}{Dataframe.}
 
-\item{group_var}{Name of grouping variable.}
-
 \item{box_var}{Name of variable used by \code{boxplot.stats}.}
+
+\item{group_var}{Name of grouping variable. If \code{NULL}, the summary will
+only have one line for all rows, without grouping.}
 
 \item{prune_var}{Name of variable with prune id. If \code{NULL}, no filter
 is used to remove pruned rows.}
