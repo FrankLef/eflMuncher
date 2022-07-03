@@ -11,22 +11,28 @@
 #' @param prune_var Name of variable with prune id. If \code{NULL}, no filter
 #' is used to remove pruned rows.
 #' @param log TRUE: Convert computations with \code{exp}.
+#' @param coef Numeric constant to determine how far the whisker extends. If
+#' zero, the whiskers will extend to extremes and no outlier will be returned.
+#' See \code{grDevices::boxplot.stats} for more details.
 #'
 #' @importFrom rlang .data
 #' @importFrom dplyr filter
 #' @importFrom stats setNames
 #' @importFrom grDevices boxplot.stats
 #'
+#' @seealso grDevices boxplot.stats
+#'
 #' @source \url{https://stackoverflow.com/questions/56669653/boxplot-stats-in-dplyr-with-groups}
 #'
 #' @return Data.frame with boxplot.stats by \code{group_var}.
 #' @export
 summ_boxplot <- function(data, box_var = "ratio_log", group_var = NULL,
-                         prune_var = NULL, log = TRUE) {
+                         prune_var = NULL, log = TRUE, coef = 1.5) {
   checkmate::assertDataFrame(data, min.cols = 2, min.rows = 1)
   checkmate::assertNames(box_var, subset.of = names(data))
   checkmate::assertString(group_var, min.chars = 1, null.ok = TRUE)
   checkmate::assertString(prune_var, min.chars = 1, null.ok = TRUE)
+  checkmate::assertNumber(coef, lower = 0L)
 
   # SOURCE: very good source with more good details
   # https://stackoverflow.com/questions/56669653/boxplot-stats-in-dplyr-with-groups
@@ -52,7 +58,7 @@ summ_boxplot <- function(data, box_var = "ratio_log", group_var = NULL,
   # https://stackoverflow.com/questions/56669653/boxplot-stats-in-dplyr-with-groups
   out <- data |>
     dplyr::summarise(boxplot = list(stats::setNames(
-      grDevices::boxplot.stats(.data[[box_var]])$stats,
+      grDevices::boxplot.stats(.data[[box_var]], coef = coef)$stats,
       the_names))) |>
     tidyr::unnest_wider(.data$boxplot)
 

@@ -12,7 +12,8 @@ summ_boxplot(
   box_var = "ratio_log",
   group_var = NULL,
   prune_var = NULL,
-  log = TRUE
+  log = TRUE,
+  coef = 1.5
 )
 }
 \arguments{
@@ -27,6 +28,10 @@ only have one line for all rows, without grouping.}
 is used to remove pruned rows.}
 
 \item{log}{TRUE: Convert computations with \code{exp}.}
+
+\item{coef}{Numeric constant to determine how far the whisker extends. If
+zero, the whiskers will extend to extremes and no outlier will be returned.
+See \code{grDevices::boxplot.stats} for more details.}
 }
 \value{
 Data.frame with boxplot.stats by \code{group_var}.
@@ -36,4 +41,7 @@ Summary with \code{boxplot.stats}.
 }
 \details{
 The summary allows to exclude pruned data from the stats.
+}
+\seealso{
+grDevices boxplot.stats
 }
