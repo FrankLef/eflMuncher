@@ -4,7 +4,7 @@ test_that("summ_boxplot: Input Errors", {
   rgx <- "Must group by variables found in `.data`"
   expect_error(summ_boxplot(df, box_var = "Sepal.Length",
                             group_var = "wrong",
-                            prune_var = NULL, log = TRUE),
+                            prune_var = NULL, is_log = TRUE),
                regexp = rgx)
 })
 
@@ -12,7 +12,7 @@ test_that("summ_boxplot: prune_var = NULL, log = FALSE", {
   df <- iris
 
   out <- summ_boxplot(df, box_var = "Sepal.Length", group_var = "Species",
-                      prune_var = NULL, log = FALSE) |>
+                      prune_var = NULL, is_log = FALSE) |>
     as.data.frame()
   # cat("\n", "out", "\n")
   # print(out)
@@ -38,7 +38,7 @@ test_that("summ_boxplot: prune_var = NULL, log = TRUE", {
   df <- iris
 
   out <- summ_boxplot(df, box_var = "Sepal.Length", group_var = "Species",
-                      prune_var = NULL, log = TRUE) |>
+                      prune_var = NULL, is_log = TRUE) |>
     mutate(dplyr::across(.cols = where(is.numeric), .fns = round, digits = 1)) |>
     dplyr::select(Species, low_whisk, low_hinge, med, high_hinge, high_whisk) |>
     as.data.frame()
@@ -66,7 +66,7 @@ test_that("summ_boxplot: prune_var = NULL, log = TRUE", {
 test_that("summ_boxplot: group_var = NULL, prune_var = NULL, log = FALSE", {
   df <- iris
 
-  out <- summ_boxplot(df, box_var = "Sepal.Length", log = FALSE) |>
+  out <- summ_boxplot(df, box_var = "Sepal.Length", is_log = FALSE) |>
     as.data.frame()
   # cat("\n", "out", "\n")
   # print(out)

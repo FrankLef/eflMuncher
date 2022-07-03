@@ -10,7 +10,7 @@
 #' only have one line for all rows, without grouping.
 #' @param prune_var Name of variable with prune id. If \code{NULL}, no filter
 #' is used to remove pruned rows.
-#' @param log TRUE: Convert computations with \code{exp}.
+#' @param is_log TRUE: Convert computations with \code{exp}.
 #' @param coef Numeric constant to determine how far the whisker extends. If
 #' zero, the whiskers will extend to extremes and no outlier will be returned.
 #' See \code{grDevices::boxplot.stats} for more details.
@@ -27,11 +27,12 @@
 #' @return Data.frame with boxplot.stats by \code{group_var}.
 #' @export
 summ_boxplot <- function(data, box_var = "ratio_log", group_var = NULL,
-                         prune_var = NULL, log = TRUE, coef = 1.5) {
+                         prune_var = NULL, is_log = TRUE, coef = 1.5) {
   checkmate::assertDataFrame(data, min.cols = 2, min.rows = 1)
   checkmate::assertNames(box_var, subset.of = names(data))
   checkmate::assertString(group_var, min.chars = 1, null.ok = TRUE)
   checkmate::assertString(prune_var, min.chars = 1, null.ok = TRUE)
+  checkmate::assertFlag(is_log)
   checkmate::assertNumber(coef, lower = 0L)
 
   # SOURCE: very good source with more good details
@@ -52,7 +53,7 @@ summ_boxplot <- function(data, box_var = "ratio_log", group_var = NULL,
 
   # get the boxplot stats
   the_names <- c('low_whisk','low_hinge','med','high_hinge','high_whisk')
-  if (log) the_names <- paste(the_names, "log", sep = "_")
+  if (is_log) the_names <- paste(the_names, "log", sep = "_")
 
   # SOURCE: very good source with more good details
   # https://stackoverflow.com/questions/56669653/boxplot-stats-in-dplyr-with-groups
@@ -63,7 +64,7 @@ summ_boxplot <- function(data, box_var = "ratio_log", group_var = NULL,
     tidyr::unnest_wider(.data$boxplot)
 
   # if log = TRUE then do the inverse with exp
-  if (log) {
+  if (is_log) {
     out <- out |>
       mutate(
         low_whisk = exp(.data$low_whisk_log),

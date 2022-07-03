@@ -12,7 +12,7 @@ summ_boxplot(
   box_var = "ratio_log",
   group_var = NULL,
   prune_var = NULL,
-  log = TRUE,
+  is_log = TRUE,
   coef = 1.5
 )
 }
@@ -27,7 +27,7 @@ only have one line for all rows, without grouping.}
 \item{prune_var}{Name of variable with prune id. If \code{NULL}, no filter
 is used to remove pruned rows.}
 
-\item{log}{TRUE: Convert computations with \code{exp}.}
+\item{is_log}{TRUE: Convert computations with \code{exp}.}
 
 \item{coef}{Numeric constant to determine how far the whisker extends. If
 zero, the whiskers will extend to extremes and no outlier will be returned.
