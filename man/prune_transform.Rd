@@ -4,12 +4,14 @@
 \alias{prune_transform}
 \title{Transform a Variable Using Pruned Data}
 \usage{
-prune_transform(data, var, prune_var = "prune_id", func = log, ...)
+prune_transform(data, new_var, var, prune_var = "prune_id", func = log, ...)
 }
 \arguments{
 \item{data}{Dataframe.}
 
-\item{var}{Name of variable with the result of the computation.}
+\item{new_var}{Name of new variable with the result of the computation.}
+
+\item{var}{Name of variable to transform.}
 
 \item{prune_var}{The name of the column with the prune id. Default is
 "prune_id".}

@@ -6,10 +6,12 @@ test_that("prune_transform: Input error", {
   # cat("\n")
 
   rgx <- "Assertion on \'c[(]var, prune_var[)]\' failed"
-  expect_error(prune_transform(df, var = "Petal.Length", prune_var = "wrong", func = log),
+  expect_error(prune_transform(df, new_var = "Petal.Length", var = "Petal.Length",
+                               prune_var = "wrong", func = log),
                regexp = rgx)
   rgx <- "Assertion on \'c[(]var, prune_var[)]\' failed"
-  expect_error(prune_transform(df, var = "wrong", prune_var = "prune_id", func = log),
+  expect_error(prune_transform(df, new_var = "Petal.Length", var = "wrong",
+                               prune_var = "prune_id", func = log),
                regexp = rgx)
 })
 
@@ -23,8 +25,8 @@ test_that("prune_transform: log", {
   # cat("\n")
 
   out <- df |>
-    prune_transform(var = "Sepal.Length", prune_var = "prune_id",
-                    func = log)
+    prune_transform(new_var = "Sepal.Length", var = "Sepal.Length",
+                    prune_var = "prune_id", func = log)
   # cat("\n", "out", "\n")
   # print(out)
   # cat("\n")
