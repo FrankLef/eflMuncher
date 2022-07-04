@@ -31,7 +31,7 @@
 #' @param data Dataframe.
 #' @param id String. ID used to identify the rows in column \code{prune_var}.
 #' @param prune_var The name of the column with the prune id. Default is
-#' \code{prune}.
+#' "prune_id".
 #' @param func Function used to select the rows meeting the condition for
 #' prunning. Default is \code{NULL}. If \code{identity()} is used, nothing will
 #' be done.

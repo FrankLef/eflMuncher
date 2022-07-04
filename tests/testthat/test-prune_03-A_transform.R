@@ -5,8 +5,11 @@ test_that("prune_transform: Input error", {
   # print(df)
   # cat("\n")
 
-  rgx <- "Assertion on \'prune_var\' failed"
+  rgx <- "Assertion on \'c[(]var, prune_var[)]\' failed"
   expect_error(prune_transform(df, var = "Petal.Length", prune_var = "wrong", func = log),
+               regexp = rgx)
+  rgx <- "Assertion on \'c[(]var, prune_var[)]\' failed"
+  expect_error(prune_transform(df, var = "wrong", prune_var = "prune_id", func = log),
                regexp = rgx)
 })
 
@@ -30,6 +33,9 @@ test_that("prune_transform: log", {
     mutate(Sepal.Length = dplyr::if_else(is.na(prune_id),
                                          log(Sepal.Length),
                                          NA_real_))
+  # cat("\n", "target", "\n")
+  # print(target)
+  # cat("\n")
 
   expect_identical(out, target)
 })

@@ -19,7 +19,7 @@ prune_proc(
 \item{id}{String. ID used to identify the rows in column \code{prune_var}.}
 
 \item{prune_var}{The name of the column with the prune id. Default is
-\code{prune}.}
+"prune_id".}
 
 \item{func}{Function used to select the rows meeting the condition for
 prunning. Default is \code{NULL}. If \code{identity()} is used, nothing will
