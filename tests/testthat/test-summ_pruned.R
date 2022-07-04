@@ -1,7 +1,9 @@
 test_that("summ_pruned: Input errors", {
-  df <- iris
+  data(iris_pruned)
+  df <- iris_pruned
+
   rgx <- "Assertion on \'prune_var\' failed"
-  expect_error(summ_pruned(df), regexp = rgx)
+  expect_error(summ_pruned(df, prune_var = "wrong"), regexp = rgx)
   df$prune_id <- NA_character_
   rgx <- "Assertion on \'amt_var\' failed"
   expect_error(summ_pruned(df, amt_var = "wrong"), regexp = rgx)
@@ -9,9 +11,8 @@ test_that("summ_pruned: Input errors", {
 
 
 test_that("summ_pruned: Without amt_var", {
-  df <- iris
-  df$prune_id <- NA_character_
-  df$prune_id[c(1, 50, 100, 101, 150)] <- c("oob", "out", "maha", "oob", "out")
+  data(iris_pruned)
+  df <- iris_pruned
 
   out <- summ_pruned(df) |>
     as.data.frame()
@@ -35,9 +36,8 @@ test_that("summ_pruned: Without amt_var", {
 })
 
 test_that("summ_pruned: With amt_var", {
-  df <- iris
-  df$prune_id <- NA_character_
-  df$prune_id[c(1, 50, 100, 101, 150)] <- c("oob", "out", "maha", "oob", "out")
+  data(iris_pruned)
+  df <- iris_pruned
 
   out <- summ_pruned(df, amt_var = "Sepal.Length") |>
     mutate(amt = round(amt, 1)) |>

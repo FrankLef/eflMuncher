@@ -19,7 +19,7 @@ prune_proc <- function(data, id = NA_character_, prune_var = "prune_id",
   checkmate::assertDataFrame(data, min.cols = 2, min.rows = 1)
   checkmate::assertString(id, min.chars = 1 , na.ok = FALSE, null.ok = FALSE)
   checkmate::assertNames(prune_var, subset.of = names(data))
-  checkmate::assertFunction(func, null.ok = FALSE)
+  checkmate::assertFunction(func)
   checkmate::assertNames(cols, subset.of = names(data))
   checkmate::assertNames(id, disjunct.from = cols)  # id must not be in cols
   checkmate::assertFunction(func)

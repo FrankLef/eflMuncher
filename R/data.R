@@ -40,3 +40,24 @@
 #' }
 #'
 "fencesNA_df"
+
+#' Example of Pruned Data with Iris
+#'
+#' Example of pruned data with iris.
+#'
+#' See the \code{prune_fence} for more details. See \code{iris} for more
+#' details on the original data.
+#'
+#' @docType data
+#'
+#' @format Dataframe with 150 rows and 6 variables.
+#' \describe{
+#'   \item{Sepal.Length}{Sepal length.}
+#'   \item{Sepal.Width}{Sepal width.}
+#'   \item{Petal.Length}{Petal length.}
+#'   \item{Petal.Width}{Petal width.}
+#'   \item{Species}{Species are iris setosa, versicolor and virginica.}
+#'   \item{prune_id}{prune id for fence, NA_character or oob_fence.}
+#' }
+#'
+"iris_pruned"
